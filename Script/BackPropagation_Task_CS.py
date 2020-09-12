@@ -4,6 +4,9 @@ from sklearn.utils import shuffle
 import matplotlib.pyplot as plt
 import seaborn as sn
 
+
+#Class neural network
+    #description : Class to intialize network d
 class neuralnetwork:
     def __init__(self,file_name,feature_list,classes_list,bias_flag, n_hidden,nepoch,lr,n_neurals,functions):
         self.data = pd.read_csv(file_name)
@@ -24,13 +27,14 @@ class neuralnetwork:
         self.X0 = 0
         if self.BF == 1 or self.BF == True:
             self.X0 = 1
-
+    #Activation fucrions
     def sigmoid(self, net):
         return 1 / (1 + (np.exp(-net)))
 
     def Hyperbolic_tangent(self, x):
         return (np.exp(x) - np.exp(-x)) / (np.exp(x) + np.exp(-x))
 
+    #import Iris dataset
     def get_train_test(self):
         classflag = [True if x in self.classes_list else False for x in self.data["Class"]]
         feature_data = self.data[classflag]
@@ -56,15 +60,13 @@ class neuralnetwork:
         self.test_data = self.test_data[["X0"] + self.feature_list + ["Class"]]
 
 
-
+    # Train and evaluate network
     def compile(self):
         max=0
         weights=[]
         self.initialize_network()
         self.get_train_test()
-
         exp = [1, 0, -1]
-        totalerror=0
         for e in range(self.num_epoch):
             error = 0
             true=0
@@ -77,7 +79,6 @@ class neuralnetwork:
                     error+=1
                 else:
                     true+=1
-
                 self.Xs=[]
             Error=int((error / len(self.train_data.values))*100)
             ACC=int((true / len(self.train_data.values))*100)
@@ -86,17 +87,15 @@ class neuralnetwork:
                 max=ACC
             self.weights_list=weights
             print("Train epoch" + str(e) + ":" + "accuracy=" + str(ACC) + "%  Error: " + str(Error) )
-
-
         self.test()
-
+    # initialize network
     def initialize_network(self):
         self.weights_list=[np.random.random((self.n_neurals[i] + 1,self.n_neurals[i + 1])) for i in range(self.n_hidden+1)]
         self.Xs=[]
         self.delta=[]
         self.netvalue=[]
 
-
+    # calculate an output from a neural network by propagating an input signal through each layer until the output layer outputs its values
     def forward(self,row):
         #Input Layer Data
 
@@ -116,7 +115,7 @@ class neuralnetwork:
             self.Xs.append(act_WX)
             XS= np.insert(act_WX, 0, self.X0, axis=1)
 
-
+    #Back probagation
     def Back(self,expected):
         expected_output=[]
         if expected == 1:
@@ -127,6 +126,7 @@ class neuralnetwork:
             expected_output = np.array([0, 0, 1])
         self.get_delta(expected_output)
 
+    # calcualte Back Propagate Error
     def get_delta(self,expected_output):
         last_layer_error = (expected_output - self.Xs[-1])
         derivative_value=[]
@@ -153,6 +153,7 @@ class neuralnetwork:
             weights_level = weights_level - 1
             XS_level = XS_level - 1
 
+    #Update wrights by using calculated values
     def Update_weights(self):
         delta=-1
         Neuron_Values = np.transpose(self.Xs[0])
@@ -167,6 +168,8 @@ class neuralnetwork:
             Update_Value = np.array(Neuron_delta)* self.LR
             self.weights_list[w]= (Update_Value) + self.weights_list[w]
             delta-=1
+
+    #Using 30% of dataset as test
     def test(self):
         print("test")
         exp = [1, 0, -1]
@@ -202,6 +205,7 @@ class neuralnetwork:
         print("Total Accuracy: "+str(Totalacc)+"%")
         return Totalacc
 
+    #Predicate class base on features values
     def Get_pred(self,input):
         last_layer = []
         last_layer.append(1)
@@ -215,6 +219,7 @@ class neuralnetwork:
             last_layer[-1] = XS
         return last_layer
 
+    # Graphs
     def confusion_matrix(self,out):
         result = [[out["1"][0], out["1"][1], out["1"][2]],
                   [out["0"][1], out["0"][0], out["0"][2]],
@@ -227,6 +232,7 @@ class neuralnetwork:
         sn.heatmap(df_cm, annot=True, annot_kws={"size": 16})  # font size
         plt.show()
 
+    # Test an input from user
     def insert_sample(self,input):
         exp = [1, 0, -1]
         input.insert(0,1)
@@ -238,9 +244,4 @@ class neuralnetwork:
                 return classname
 
 
-#L=neuralnetwork("IrisData.txt",["X1","X2","X3","X4"],["Iris-setosa","Iris-virginica","Iris-versicolor"],1,2,1500,0.1,[4,10,5, 3],"Sigmoind")
-#L=neuralnetwork("IrisData.txt",["X1","X2","X3","X4"],["Iris-setosa","Iris-virginica","Iris-versicolor"],1,1,250,0.1,[4,12, 3],"Sigmoind")
-#L=neuralnetwork("IrisData.txt",["X1","X2","X3","X4"],["Iris-setosa","Iris-virginica","Iris-versicolor"],1,2,5000,0.1,[4,24,12, 3],"Sigmoind")
 
-#L.compile()
-#L.insert_sample([5.1,3.5,1.4,0.2])
