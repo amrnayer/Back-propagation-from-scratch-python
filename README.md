@@ -17,3 +17,14 @@ we can broke it  down into 6 parts:
 6. Predict.
 
 # Import data
+Read dataset using pandas and divide dataset into train and test as 70% and 30% respectively
+
+# Initialize Network
+Each neuron has a set of weights that need to be maintained. One weight for each input connection and an additional weight for the bias. We will need to store additional properties for a neuron during training, therefore we will use a dictionary to represent each neuron and store properties by names such as ‘weights‘ for the weights.
+A network is organized into layers. The input layer is really just a row from our training dataset. The first real layer is the hidden layer. This is followed by the output layer that has one neuron for each class value.
+>def initialize_network(self):
+        self.weights_list=[np.random.random((self.n_neurals[i] + 1,self.n_neurals[i + 1])) for i in range(self.n_hidden+1)]
+        self.Xs=[]
+        self.delta=[]
+        self.netvalue=[]
+      
